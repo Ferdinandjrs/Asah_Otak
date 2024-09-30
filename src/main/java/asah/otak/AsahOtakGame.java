@@ -9,21 +9,21 @@ public class AsahOtakGame {
     private static final String DB_PASSWORD = "HSDgrc55##";
 
     public static void main(String[] args) {
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
-            playGame(conn);
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+            playGame(connection);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public static void playGame(Connection conn) throws SQLException {
+    public static void playGame(Connection connection) throws SQLException {
 
         String query = "SELECT id, kata, clue FROM master_kata ORDER BY RAND() LIMIT 1";
         String kata = "";
         String clue = "";
         int kataId = 0;
 
-        try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+        try (Statement statement = connection.createStatement(); ResultSet rs = statement.executeQuery(query)) {
             if (rs.next()) {
                 kataId = rs.getInt("id");
                 kata = rs.getString("kata");
@@ -52,7 +52,7 @@ public class AsahOtakGame {
         int totalScore = 0;
         for (int i = 0; i < kataLength; i++) {
             if (i == 2 || i == 6) {
-                continue; // Skip clue letters
+                continue;
             }
 
             if (userInput[i] == kata.charAt(i)) {
@@ -71,26 +71,26 @@ public class AsahOtakGame {
         int pilihan = scanner.nextInt();
 
         if (pilihan == 1) {
-            saveScore(conn, totalScore);
+            saveScore(connection, totalScore);
         } else {
-            playGame(conn);
+            playGame(connection);
         }
     }
 
-    public static void saveScore(Connection conn, int totalScore) throws SQLException {
+    public static void saveScore(Connection connection, int totalScore) throws SQLException {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Masukkan nama Anda: ");
         String namaUser = scanner.nextLine();
 
         String insertQuery = "INSERT INTO point_game (nama_user, total_point) VALUES (?, ?)";
-        try (PreparedStatement pstmt = conn.prepareStatement(insertQuery)) {
+        try (PreparedStatement pstmt = connection.prepareStatement(insertQuery)) {
             pstmt.setString(1, namaUser);
             pstmt.setInt(2, totalScore);
             pstmt.executeUpdate();
         }
 
         System.out.println("Poin Anda telah disimpan. Permainan dimulai lagi!");
-        playGame(conn);
+        playGame(connection);
     }
 }
 
