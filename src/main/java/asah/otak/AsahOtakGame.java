@@ -1,7 +1,6 @@
 package asah.otak;
 
 import java.sql.*;
-import java.util.Random;
 import java.util.Scanner;
 
 public class AsahOtakGame {
